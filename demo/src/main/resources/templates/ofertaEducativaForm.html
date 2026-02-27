@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agregar Oferta Educativa</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+
+<nav th:replace="fragments/navbar :: menu"></nav>
+
+<main class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+
+                <div class="card shadow-lg border-0 rounded-4">
+                    <div class="card-header bg-primary text-white text-center rounded-top-4">
+                        <h4 class="mb-0">Nueva Oferta Educativa</h4>
+                    </div>
+
+                    <div class="card-body p-4">
+
+                        <form th:action="@{/consola/ofertaEducativa/save}" 
+                              method="post" 
+                              th:object="${ofertaEducativa}">
+
+                            <!-- ID oculto -->
+                            <input type="hidden" th:field="*{id}">
+
+                            <!-- Nombre -->
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Nombre de la Oferta</label>
+                                <input type="text" 
+                                       th:field="*{nombreOferta}" 
+                                       class="form-control form-control-lg"
+                                       placeholder="Ej. Ingeniería en Sistemas"
+                                       required>
+                            </div>
+
+                            <!-- Modalidad -->
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Modalidad</label>
+                                <input type="text" 
+                                       th:field="*{modalidad}" 
+                                       class="form-control"
+                                       placeholder="Presencial / En línea">
+                            </div>
+
+                            <!-- Imagen -->
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">URL de Imagen</label>
+                                <input type="text" 
+                                       th:field="*{imagen}" 
+                                       class="form-control"
+                                       placeholder="https://...">
+
+                                <div class="text-danger mt-1"
+                                     th:if="${#fields.hasErrors('imagen')}"
+                                     th:errors="*{imagen}">
+                                </div>
+                            </div>
+
+                            <!-- División -->
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold">División</label>
+                                <select th:field="*{division}" 
+                                        class="form-select">
+                                    <option value="" disabled selected>
+                                        Seleccione una división
+                                    </option>
+                                    <option th:each="division : ${divisiones}"
+                                            th:value="${division.id}"
+                                            th:text="${division.nombre}">
+                                    </option>
+                                </select>
+                            </div>
+
+                            <!-- Botones -->
+                            <div class="d-grid gap-2">
+                                <button type="submit" 
+                                        class="btn btn-primary btn-lg rounded-3">
+                                    Guardar Oferta
+                                </button>
+
+                                <a th:href="@{/consola/ofertaEducativa}" 
+                                   class="btn btn-outline-secondary rounded-3">
+                                    Cancelar
+                                </a>
+                            </div>
+
+                        </form>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
