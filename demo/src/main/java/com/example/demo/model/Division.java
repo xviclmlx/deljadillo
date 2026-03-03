@@ -10,6 +10,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotEmpty;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import lombok.Data;
 import lombok.ToString;
 
@@ -20,7 +23,7 @@ public class Division {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id; // 🔥 CAMBIO AQUÍ (Integer, NO int)
+    private Integer id;
 
     @NotEmpty(message = "La clave es obligatoria")
     private String clave;
@@ -32,5 +35,6 @@ public class Division {
 
     @ToString.Exclude
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "division")
+    @JsonManagedReference // 🔥 evita ciclos infinitos
     private List<OfertaEducativa> programasEducativos; 
 }

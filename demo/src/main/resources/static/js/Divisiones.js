@@ -2,23 +2,24 @@ let modalDivision;
 
 document.addEventListener("DOMContentLoaded", function () {
 
-    // Inicializar modal
     modalDivision = new bootstrap.Modal(document.getElementById('modalDivision'));
 
-    // Botón nueva división
     const btnNueva = document.getElementById("btnNuevaDivision");
-    if (btnNueva) {
-        btnNueva.addEventListener("click", abrirModalNueva);
-    }
+    if (btnNueva) btnNueva.addEventListener("click", abrirModalNueva);
 
     // Delegación para botones editar
     document.addEventListener("click", function (e) {
-
         if (e.target.classList.contains("btn-editar")) {
             const id = e.target.getAttribute("data-id");
             editarDivision(id);
         }
+    });
 
+    // Interceptar submit del formulario
+    const form = document.getElementById("formDivision");
+    form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        guardarDivision();
     });
 
 });
@@ -39,12 +40,7 @@ function abrirModalNueva() {
 function editarDivision(id) {
 
     fetch(`/consola/divisiones/${id}`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("Error al obtener división");
-            }
-            return response.json();
-        })
+        .then(r => r.json())
         .then(data => {
 
             document.getElementById("tituloModal").innerText = "Editar División";
@@ -56,9 +52,63 @@ function editarDivision(id) {
 
             modalDivision.show();
         })
-        .catch(error => {
-            console.error("Error:", error);
-            alert("No se pudo cargar la división");
-        });
+        .catch(() => alert("Error al cargar división"));
+}
 
+function guardarDivision() {
+
+    const division = {
+        id: document.getElementById("divisionId").value || null,
+        clave: document.getElementById("claveInput").value,
+        nombre: document.getElementById("nombreInput").value,
+        activo: document.getElementById("activoInput").checked
+    };
+
+    fetch("/consola/divisiones/update", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(division)
+    })
+        .then(r => r.json())
+        .then(data => {
+
+            actualizarFilaDOM(data);
+
+            modalDivision.hide();
+        })
+        .catch(() => alert("Error al guardar división"));
+}
+
+function actualizarFilaDOM(division) {
+
+    let fila = document.getElementById(`fila-${division.id}`);
+
+    // Si no existe, es nueva → agregar fila
+    if (!fila) {
+        const tbody = document.querySelector("tbody");
+
+        fila = document.createElement("tr");
+        fila.id = `fila-${division.id}`;
+
+        fila.innerHTML = `
+            <td>${division.id}</td>
+            <td>${division.clave}</td>
+            <td>${division.nombre}</td>
+            <td>${division.activo ? "Sí" : "No"}</td>
+            <td>
+                <button class="btn btn-warning btn-sm btn-editar" data-id="${division.id}">
+                    Editar
+                </button>
+            </td>
+        `;
+
+        tbody.appendChild(fila);
+        return;
+    }
+
+    // Si existe, actualizar datos
+    const celdas = fila.children;
+    celdas[1].innerText = division.clave;
+    celdas[2].innerText = division.nombre;
+    celdas[3].innerText = division.activo ? "Sí" : "No";
 }

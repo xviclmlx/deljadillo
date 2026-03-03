@@ -13,7 +13,7 @@
 
     <h2>Listado de Ofertas Educativas</h2>
 
-    <button class="btn btn-success mb-3" onclick="abrirModalNueva()">
+    <button class="btn btn-success mb-3" id="btnNuevaOferta" onclick="abrirModalNueva()">
         Nueva Oferta
     </button>
 
@@ -29,31 +29,22 @@
         </tr>
         </thead>
 
-        <tbody>
-        <tr th:each="oferta : ${ofertas}">
+        <!-- 🔥 IMPORTANTE: ahora el tbody tiene id="tablaOfertas" -->
+        <tbody id="tablaOfertas">
+        <tr th:each="oferta : ${ofertas}" th:id="'fila-' + ${oferta.id}">
             <td th:text="${oferta.id}"></td>
-
             <td>
-                <img th:src="${oferta.imagen}"
-                     style="max-height:60px;object-fit:contain">
+                <img th:src="${oferta.imagen}" style="max-height:60px;object-fit:contain">
             </td>
-
             <td th:text="${oferta.nombreOferta}"></td>
             <td th:text="${oferta.modalidad}"></td>
-
             <td th:text="${oferta.division != null ? oferta.division.nombre : 'Sin división'}"></td>
-
             <td>
-                <button class="btn btn-warning btn-sm"
-                        th:attr="onclick=
-                        'editarOferta(' +
-                        ${oferta.id} + ',' +
-                        '\'' + ${oferta.nombreOferta} + '\',' +
-                        '\'' + ${oferta.modalidad} + '\',' +
-                        '\'' + ${oferta.imagen} + '\',' +
-                        (${oferta.division != null ? oferta.division.id : 0}) +
-                        ')'">
+                <button class="btn btn-warning btn-sm" th:attr="onclick='editarOferta(' + ${oferta.id} + ')'">
                     Editar
+                </button>
+                <button class="btn btn-danger btn-sm" th:attr="onclick='eliminarOferta(' + ${oferta.id} + ')'">
+                    Eliminar
                 </button>
             </td>
         </tr>
@@ -61,13 +52,13 @@
     </table>
 </div>
 
-
 <!-- MODAL -->
 <div class="modal fade" id="modalOferta" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
 
-            <form method="post" th:action="@{/consola/ofertaEducativa/save}">
+            <!-- 🔥 IMPORTANTE: ahora el form tiene id="formOferta" y NO usa th:action -->
+            <form id="formOferta">
                 <div class="modal-header">
                     <h5 class="modal-title">Oferta Educativa</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -96,16 +87,16 @@
                         <label>División</label>
                         <select class="form-select" id="division" name="division.id">
                             <option value="">Seleccionar división</option>
-                            <option th:each="d : ${divisiones}"
-                                    th:value="${d.id}"
-                                    th:text="${d.nombre}">
-                            </option>
+                            <option th:each="d : ${divisiones}" th:value="${d.id}" th:text="${d.nombre}"></option>
                         </select>
                     </div>
 
                 </div>
 
                 <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
                     <button type="submit" class="btn btn-primary">
                         Guardar
                     </button>

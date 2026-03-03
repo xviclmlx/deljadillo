@@ -30,7 +30,8 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="division : ${divisiones}">
+        <tr th:each="division : ${divisiones}"
+            th:id="'fila-' + ${division.id}">
             <td th:text="${division.id}"></td>
             <td th:text="${division.clave}"></td>
             <td th:text="${division.nombre}"></td>
@@ -53,11 +54,9 @@
     <div class="modal-dialog">
         <div class="modal-content">
 
-            <form th:action="@{/consola/divisiones/save}"
-                  th:object="${division}"
-                  method="post">
+            <form id="formDivision">
 
-                <input type="hidden" th:field="*{id}" id="divisionId"/>
+                <input type="hidden" id="divisionId"/>
 
                 <div class="modal-header">
                     <h5 class="modal-title" id="tituloModal">Nueva División</h5>
@@ -72,7 +71,6 @@
                         <label>Clave</label>
                         <input type="text"
                                class="form-control"
-                               th:field="*{clave}"
                                id="claveInput"
                                required>
                     </div>
@@ -81,7 +79,6 @@
                         <label>Nombre</label>
                         <input type="text"
                                class="form-control"
-                               th:field="*{nombre}"
                                id="nombreInput"
                                required>
                     </div>
@@ -89,7 +86,6 @@
                     <div class="form-check">
                         <input type="checkbox"
                                class="form-check-input"
-                               th:field="*{activo}"
                                id="activoInput">
                         <label class="form-check-label">Activo</label>
                     </div>

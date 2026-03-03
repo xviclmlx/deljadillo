@@ -5,13 +5,10 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.demo.model.Division;
 import com.example.demo.repository.DivisionesRepository;
-
-import jakarta.validation.Valid;
 
 @Controller
 public class DivisionController {
@@ -26,9 +23,6 @@ public class DivisionController {
         List<Division> divisiones = repo.findAll();
         model.addAttribute("divisiones", divisiones);
 
-        // 🔥 IMPORTANTE: siempre enviar objeto vacío
-        model.addAttribute("division", new Division());
-
         return "divisionTabla";
     }
 
@@ -40,28 +34,13 @@ public class DivisionController {
                 .orElseThrow(() -> new IllegalArgumentException("División no encontrada"));
     }
 
-    // GUARDAR
-    @PostMapping("/consola/divisiones/save")
-    public String guardarDivision(
-            @Valid @ModelAttribute("division") Division division,
-            Errors errors,
-            Model model) {
+    // GUARDAR / ACTUALIZAR (AJAX)
+    @PostMapping("/consola/divisiones/update")
+    @ResponseBody
+    public Division actualizarDivision(@RequestBody Division division) {
 
-        // 🔥 SI HAY ERRORES
-        if (errors.hasErrors()) {
-            model.addAttribute("divisiones", repo.findAll());
-            model.addAttribute("division", division); // MUY IMPORTANTE
-            return "divisionTabla";
-        }
+        Division guardada = repo.save(division);
 
-        // DEBUG (puedes dejarlo)
-        System.out.println("ID: " + division.getId());
-        System.out.println("Clave: " + division.getClave());
-        System.out.println("Nombre: " + division.getNombre());
-        System.out.println("Activo: " + division.getActivo());
-
-        repo.save(division);
-
-        return "redirect:/consola/divisiones";
+        return guardada; // JSON
     }
 }
